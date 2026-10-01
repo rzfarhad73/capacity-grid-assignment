@@ -1,4 +1,4 @@
-import type { PersonCapacity } from './api'
+import type { Person, PersonCapacity } from './api'
 import {
   addDays,
   formatDate,
@@ -8,19 +8,19 @@ import {
   weekCount,
   type Range,
 } from './dates'
+import { formatHours } from './format'
 import { Skeleton } from './ui/Skeleton'
 import { useCapacity } from './useCapacity'
+import { WeeklyHoursCell } from './WeeklyHoursCell'
 
 type Props = {
   range: Range
 }
 
-const hours = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 })
-
 // CapacityGrid shows allocated hours per person per week against their weekly
 // capacity. Over-allocated weeks are marked in colour and with the excess hours.
 export function CapacityGrid({ range }: Props) {
-  const { data, loading, error, retry } = useCapacity(range)
+  const { data, loading, error, retry, confirmSave } = useCapacity(range)
   const { from, to } = range
   const requested = formatRange(mondayOf(from), addDays(mondayOf(to), 6))
   const loadError = error && (
@@ -39,6 +39,10 @@ export function CapacityGrid({ range }: Props) {
   return (
     <section>
       <p className="range">{formatRange(data.from, data.to)}</p>
+      <p className="legend">
+        <span className="over-swatch" aria-hidden="true" /> Over capacity, with
+        the extra hours. Select a capacity to change it.
+      </p>
       {loadError}
 
       {data.people.length === 0 ? (
@@ -65,7 +69,11 @@ export function CapacityGrid({ range }: Props) {
             </thead>
             <tbody>
               {data.people.map((person) => (
-                <PersonRow key={person.id} person={person} />
+                <PersonRow
+                  key={person.id}
+                  person={person}
+                  onSaved={confirmSave}
+                />
               ))}
             </tbody>
           </table>
@@ -127,13 +135,18 @@ function GridSkeleton({ range: { from, to } }: Props) {
   )
 }
 
-function PersonRow({ person }: { person: PersonCapacity }) {
+type RowProps = {
+  person: PersonCapacity
+  onSaved: (person: Person) => void
+}
+
+function PersonRow({ person, onSaved }: RowProps) {
   return (
     <tr>
-      <th scope="row" dir="auto">
+      <th scope="row" dir="auto" title={person.name}>
         {person.name}
       </th>
-      <td className="capacity">{hours.format(person.weekly_hours)} h</td>
+      <WeeklyHoursCell person={person} onSaved={onSaved} />
       {person.allocated.map((allocated, i) => (
         <AllocationCell
           key={i}
@@ -153,17 +166,17 @@ type CellProps = {
 function AllocationCell({ allocated, capacity }: CellProps) {
   const excess = allocated - capacity
   if (excess > 0) {
-    const title = `${hours.format(allocated)} h allocated, ${hours.format(capacity)} h capacity`
+    const title = `${formatHours(allocated)} h allocated, ${formatHours(capacity)} h capacity`
     return (
       <td className="over" title={title}>
-        {hours.format(allocated)}{' '}
-        <span className="excess">+{hours.format(excess)}</span>
+        {formatHours(allocated)}{' '}
+        <span className="excess">+{formatHours(excess)}</span>
       </td>
     )
   }
   return (
     <td className={allocated === 0 ? 'idle' : undefined}>
-      {hours.format(allocated)}
+      {formatHours(allocated)}
     </td>
   )
 }

@@ -38,10 +38,10 @@ export function RangeControls({ range, onChange }: Props) {
   return (
     <form className="range-controls" onSubmit={submit}>
       <button type="button" onClick={() => shift(-7)}>
-        ← Previous week
+        <span aria-hidden="true">←</span> Previous week
       </button>
       <button type="button" onClick={() => shift(7)}>
-        Next week →
+        Next week <span aria-hidden="true">→</span>
       </button>
       <label>
         From

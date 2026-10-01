@@ -42,6 +42,21 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+.legend {
+  margin: -0.5rem 0 0.75rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.over-swatch {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: -0.05em;
+  border: 1px solid var(--over);
+  background: var(--over-bg);
+}
+
 .load-error {
   margin-bottom: 0.75rem;
   color: var(--over);
@@ -88,6 +103,49 @@ th:first-child {
 
 .capacity {
   left: 14rem;
+  /* Wide enough for the editor, so opening it doesn't shift the weeks. */
+  width: 11rem;
+  min-width: 11rem;
+}
+
+.hours-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.hours-button:hover {
+  text-decoration-style: solid;
+}
+
+.hours-button:focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: 2px;
+}
+
+.hours-form {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hours-form input {
+  width: 4.5rem;
+}
+
+.save-error {
+  margin: 0.25rem 0 0;
+  max-width: 10rem;
+  white-space: normal;
+  text-align: start;
+  font-size: 0.8rem;
+  color: var(--over);
 }
 
 thead th {

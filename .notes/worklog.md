@@ -44,3 +44,17 @@ left unfinished. Append as you go; a line or two per entry is right.
   superseded request is aborted. A failed load names the range that failed and falls back
   to the last loaded grid with Try again.
 - Deferred: row virtualisation. 500 rows render fine; a few thousand × 26 weeks would need it.
+
+## Editing weekly hours
+
+- Edited in place in the capacity cell; Enter/Save saves, Escape/✕ cancels. The save waits for
+  the server (row shows Saving…), so the grid never shows a value that wasn't stored.
+- After a save the person is patched into the loaded data from the PATCH response; every week's
+  over/under recomputes from it, with no range refetch. A load that started before the save
+  may carry the old value, so saves confirmed after a load started are re-applied to it.
+- Failed save keeps the typed value and the editor open. A 4xx says it wasn't saved and why;
+  a timeout, network error or 5xx says it may not have been saved. Retrying is safe: setting
+  the same hours twice has the same result. Requests time out after 15 s.
+- Deferred: a save that fails after the manager has moved to another range has no row to
+  report on; the grid shows the stored value when that range loads again. Likewise, moving
+  to another range with an editor open drops the unsaved value without warning.
