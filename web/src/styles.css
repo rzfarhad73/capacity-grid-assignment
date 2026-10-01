@@ -1,6 +1,9 @@
 :root {
   color-scheme: light dark;
   font-family: ui-sans-serif, system-ui, sans-serif;
+  --line: color-mix(in srgb, currentColor 20%, transparent);
+  --over: light-dark(#b71c1c, #ff8a80);
+  --over-bg: color-mix(in srgb, #e53935 18%, Canvas);
 }
 
 body {
@@ -10,23 +13,124 @@ body {
 
 h1 {
   font-size: 1.4rem;
-  margin: 0 0 0.25rem;
+  margin: 0 0 1rem;
+}
+
+.range-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.range-controls label {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.form-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--over);
 }
 
 .range {
-  margin: 0 0 1.5rem;
-  opacity: 0.6;
+  margin: 0 0 0.75rem;
+  opacity: 0.7;
   font-variant-numeric: tabular-nums;
 }
 
+.load-error {
+  margin-bottom: 0.75rem;
+  color: var(--over);
+}
+
+.grid {
+  overflow: auto;
+  max-height: calc(100vh - 12rem);
+}
+
 table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
 th,
 td {
-  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-  padding: 0.5rem 0.75rem;
-  text-align: left;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.4rem 0.75rem;
+  text-align: right;
+  white-space: nowrap;
+  background: Canvas;
+}
+
+/* Person and Capacity stay pinned while the weeks scroll. */
+th:first-child,
+.capacity {
+  position: sticky;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+th:first-child {
+  left: 0;
+  width: 14rem;
+  min-width: 14rem;
+  max-width: 14rem;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.capacity {
+  left: 14rem;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+thead th:first-child,
+thead .capacity {
+  z-index: 3;
+}
+
+td.idle {
+  color: color-mix(in srgb, CanvasText 40%, transparent);
+}
+
+td.over {
+  background: var(--over-bg);
+  color: var(--over);
+  font-weight: 600;
+}
+
+.excess {
+  font-size: 0.8em;
+}
+
+.skeleton {
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 4px;
+  background: color-mix(in srgb, CanvasText 12%, transparent);
+  animation: pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 }

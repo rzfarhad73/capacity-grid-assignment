@@ -32,3 +32,15 @@ left unfinished. Append as you go; a line or two per entry is right.
 - Body `{"weekly_hours": n}`, 0–168; 0 is valid (Eli). Returns the stored person, which is all
   the grid needs: capacity doesn't change allocation, so no range refetch.
 - Last write wins; there's no version column to detect concurrent edits.
+
+## Grid
+
+- Plain React, no new dependencies. Over-allocated cells are red and show the excess (`+5`),
+  so it doesn't rely on colour alone. Exactly at capacity (Ana 40/40) is not over.
+- Range: previous/next week shifts both ends by 7 days; From/To applies on Show, validated
+  against the same 26-week cap so an oversized range is explained, not sent. Show reloads
+  even when the dates are unchanged, so it doubles as refresh.
+- While a range loads, the table shows a skeleton with that range's week headers; a
+  superseded request is aborted. A failed load names the range that failed and falls back
+  to the last loaded grid with Try again.
+- Deferred: row virtualisation. 500 rows render fine; a few thousand × 26 weeks would need it.
