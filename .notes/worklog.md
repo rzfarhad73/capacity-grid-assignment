@@ -15,3 +15,14 @@ left unfinished. Append as you go; a line or two per entry is right.
   Dee (overlapping projects, 45 h vs 40), Eli (0 weekly hours, 20 h allocated → no % possible).
 - Data is otherwise clean: 500 people, Jun 2025–Jan 2027, no orphans or inverted ranges.
 - `weekly_hours` has no effective date, so an edit changes every week, past ones included.
+
+## GET /api/capacity
+
+- Response: `weeks[]` (Mondays) plus `people[]`, each with `weekly_hours` and a dense
+  `allocated[]` aligned to `weeks`. Capacity is sent once because it can't vary by week.
+- Range widened to whole Mon–Sun weeks and capped at 26 per request (400 above that).
+  500 people × 26 weeks: ~45 ms, ~64 KB.
+- Weeks are computed once in Go and passed as `date[]`, so Go and SQL can't disagree on columns.
+- Checked against hand-written SQL: Ana 40/0/30, Dee 45 vs 40, Eli 20 vs 0.
+- Deferred: the `(start_date, end_date)` btree only helps half of the overlap test; at scale
+  I'd add a GiST index on `daterange(start_date, end_date)`. Schema is fixed input.
