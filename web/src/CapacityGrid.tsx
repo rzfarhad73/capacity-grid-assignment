@@ -2,7 +2,6 @@ import { memo } from 'react'
 import type { PersonCapacity } from './api'
 import {
   addDays,
-  formatDate,
   formatRange,
   formatWeek,
   mondayOf,
@@ -63,14 +62,12 @@ export function CapacityGrid({ range }: Props) {
                 <th scope="col" className="capacity">
                   Capacity
                 </th>
-                {data.weeks.map((week) => (
-                  <th
+                {data.weeks.map((week, i) => (
+                  <WeekHeader
                     key={week}
-                    scope="col"
-                    title={`Week of ${formatDate(week)}`}
-                  >
-                    {formatWeek(week)}
-                  </th>
+                    week={week}
+                    previous={data.weeks[i - 1]}
+                  />
                 ))}
               </tr>
             </thead>
@@ -88,6 +85,20 @@ export function CapacityGrid({ range }: Props) {
         </div>
       )}
     </section>
+  )
+}
+
+// WeekHeader labels a week by its Monday. The year shows on the first week and
+// wherever it changes; the tooltip gives the full Monday–Sunday range.
+function WeekHeader({ week, previous }: { week: string; previous?: string }) {
+  const year = week.slice(0, 4)
+  return (
+    <th scope="col" title={formatRange(week, addDays(week, 6))}>
+      {year !== previous?.slice(0, 4) && (
+        <span className="week-year">{year}</span>
+      )}{' '}
+      {formatWeek(week)}
+    </th>
   )
 }
 
@@ -113,10 +124,8 @@ function GridSkeleton({ range: { from, to } }: Props) {
               <th scope="col" className="capacity">
                 Capacity
               </th>
-              {weeks.map((week) => (
-                <th key={week} scope="col">
-                  {formatWeek(week)}
-                </th>
+              {weeks.map((week, i) => (
+                <WeekHeader key={week} week={week} previous={weeks[i - 1]} />
               ))}
             </tr>
           </thead>
