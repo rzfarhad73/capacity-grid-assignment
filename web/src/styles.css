@@ -4,6 +4,7 @@
   --line: color-mix(in srgb, currentColor 20%, transparent);
   --over: light-dark(#b71c1c, #ff8a80);
   --over-bg: color-mix(in srgb, #e53935 18%, Canvas);
+  --ok: light-dark(#1b5e20, #81c784);
 }
 
 body {
@@ -108,24 +109,43 @@ th:first-child {
   min-width: 11rem;
 }
 
-.hours-button {
-  padding: 0;
-  border: 0;
-  background: none;
+.hours-button,
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
   color: inherit;
   font: inherit;
-  text-decoration: underline dotted;
-  text-underline-offset: 3px;
   cursor: pointer;
 }
 
-.hours-button:hover {
-  text-decoration-style: solid;
+.hours-button {
+  gap: 0.4rem;
+  padding: 0.1rem 0.3rem;
+  margin: -0.1rem -0.3rem;
+  border: 1px solid transparent;
+  background: none;
 }
 
-.hours-button:focus-visible {
+.hours-button .icon {
+  opacity: 0.35;
+}
+
+.hours-button:hover,
+.icon-button:hover {
+  background: color-mix(in srgb, CanvasText 10%, transparent);
+}
+
+.hours-button:hover .icon,
+.hours-button:focus-visible .icon {
+  opacity: 1;
+}
+
+.hours-button:focus-visible,
+.icon-button:focus-visible,
+.hours-form input:focus-visible {
   outline: 2px solid Highlight;
-  outline-offset: 2px;
+  outline-offset: 1px;
 }
 
 .hours-form {
@@ -137,6 +157,38 @@ th:first-child {
 
 .hours-form input {
   width: 4.5rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: Canvas;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.icon-button {
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid currentColor;
+  background: none;
+}
+
+.icon-button.save {
+  color: var(--ok);
+}
+
+.icon-button.save:hover {
+  background: color-mix(in srgb, var(--ok) 15%, transparent);
+}
+
+.icon-button.cancel {
+  color: var(--over);
+}
+
+.icon-button.cancel:hover {
+  background: color-mix(in srgb, var(--over) 15%, transparent);
 }
 
 .save-error {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type FormEvent } from 'react'
 import type { Person } from './api'
 import { formatHours } from './format'
+import { CheckIcon, CloseIcon, PencilIcon } from './ui/icons'
 import { MAX_WEEKLY_HOURS, type Edit } from './useWeeklyHoursEdits'
 
 type Props = {
@@ -61,6 +62,7 @@ export function WeeklyHoursCell({
           onClick={onOpen}
         >
           {formatHours(person.weekly_hours)} h
+          <PencilIcon />
         </button>
       </td>
     )
@@ -82,6 +84,7 @@ export function WeeklyHoursCell({
           max={MAX_WEEKLY_HOURS}
           step="any"
           autoComplete="off"
+          dir="ltr"
           value={edit.draft}
           readOnly={edit.saving}
           autoFocus
@@ -92,9 +95,20 @@ export function WeeklyHoursCell({
           <span role="status">Saving…</span>
         ) : (
           <>
-            <button type="submit">Save</button>
-            <button type="button" aria-label="Cancel" onClick={cancel}>
-              ✕
+            <button
+              type="submit"
+              className="icon-button save"
+              aria-label="Save"
+            >
+              <CheckIcon />
+            </button>
+            <button
+              type="button"
+              className="icon-button cancel"
+              aria-label="Cancel"
+              onClick={cancel}
+            >
+              <CloseIcon />
             </button>
           </>
         )}
