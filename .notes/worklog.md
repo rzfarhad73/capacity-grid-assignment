@@ -44,6 +44,8 @@ left unfinished. Append as you go; a line or two per entry is right.
   superseded request is aborted. A failed load names the range that failed and falls back
   to the last loaded grid with Try again.
 - Deferred: row virtualisation. 500 rows render fine; a few thousand × 26 weeks would need it.
+  Measured 500 × 26 weeks (13.5k cells): API ~50 ms, click to painted grid 0.5–1.2 s in dev,
+  so rendering, not the query, is what grows with the roster.
 
 ## Editing weekly hours
 
@@ -58,3 +60,15 @@ left unfinished. Append as you go; a line or two per entry is right.
 - Deferred: a save that fails after the manager has moved to another range has no row to
   report on; the grid shows the stored value when that range loads again. Likewise, moving
   to another range with an editor open drops the unsaved value without warning.
+
+## Tests
+
+- API: `docker compose exec api go test ./...`. The allocation query runs against Postgres with
+  its own people and assignments inside a rolled-back transaction, one case per rule (split rows,
+  weekends, week boundaries, overlaps, clipping, no assignments). Checked each case fails when
+  its rule is broken. Input validation, injection attempts and database errors are covered
+  without a database; 500s must not leak the driver's message.
+- Web: `docker compose exec web npm test`. A failed save keeps the typed value, and a load
+  that started before a save can't bring back the old value.
+- Final check against the seed: all 41,500 person-week cells (500 people × 83 weeks) match an
+  independent day-by-day query, and the grid matches the API cell for cell.
