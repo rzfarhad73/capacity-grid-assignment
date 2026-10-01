@@ -26,3 +26,9 @@ left unfinished. Append as you go; a line or two per entry is right.
 - Checked against hand-written SQL: Ana 40/0/30, Dee 45 vs 40, Eli 20 vs 0.
 - Deferred: the `(start_date, end_date)` btree only helps half of the overlap test; at scale
   I'd add a GiST index on `daterange(start_date, end_date)`. Schema is fixed input.
+
+## PATCH /api/people/{id}
+
+- Body `{"weekly_hours": n}`, 0–168; 0 is valid (Eli). Returns the stored person, which is all
+  the grid needs: capacity doesn't change allocation, so no range refetch.
+- Last write wins; there's no version column to detect concurrent edits.
