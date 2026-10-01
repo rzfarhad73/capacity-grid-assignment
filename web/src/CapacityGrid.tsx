@@ -1,4 +1,5 @@
-import type { Person, PersonCapacity } from './api'
+import { memo } from 'react'
+import type { PersonCapacity } from './api'
 import {
   addDays,
   formatDate,
@@ -11,6 +12,11 @@ import {
 import { formatHours } from './format'
 import { Skeleton } from './ui/Skeleton'
 import { useCapacity } from './useCapacity'
+import {
+  useWeeklyHoursEdits,
+  type Edit,
+  type EditActions,
+} from './useWeeklyHoursEdits'
 import { WeeklyHoursCell } from './WeeklyHoursCell'
 
 type Props = {
@@ -21,6 +27,7 @@ type Props = {
 // capacity. Over-allocated weeks are marked in colour and with the excess hours.
 export function CapacityGrid({ range }: Props) {
   const { data, loading, error, retry, confirmSave } = useCapacity(range)
+  const { edits, actions } = useWeeklyHoursEdits(confirmSave)
   const { from, to } = range
   const requested = formatRange(mondayOf(from), addDays(mondayOf(to), 6))
   const loadError = error && (
@@ -72,7 +79,8 @@ export function CapacityGrid({ range }: Props) {
                 <PersonRow
                   key={person.id}
                   person={person}
-                  onSaved={confirmSave}
+                  edit={edits[person.id]}
+                  actions={actions}
                 />
               ))}
             </tbody>
@@ -137,16 +145,25 @@ function GridSkeleton({ range: { from, to } }: Props) {
 
 type RowProps = {
   person: PersonCapacity
-  onSaved: (person: Person) => void
+  edit: Edit | undefined
+  actions: EditActions
 }
 
-function PersonRow({ person, onSaved }: RowProps) {
+// Memoised: while one person is edited, only their row re-renders on each keystroke.
+const PersonRow = memo(function PersonRow({ person, edit, actions }: RowProps) {
   return (
     <tr>
       <th scope="row" dir="auto" title={person.name}>
         {person.name}
       </th>
-      <WeeklyHoursCell person={person} onSaved={onSaved} />
+      <WeeklyHoursCell
+        person={person}
+        edit={edit}
+        onOpen={() => actions.open(person)}
+        onChange={(draft) => actions.change(person.id, draft)}
+        onCancel={() => actions.cancel(person.id)}
+        onSave={() => actions.save(person)}
+      />
       {person.allocated.map((allocated, i) => (
         <AllocationCell
           key={i}
@@ -156,7 +173,7 @@ function PersonRow({ person, onSaved }: RowProps) {
       ))}
     </tr>
   )
-}
+})
 
 type CellProps = {
   allocated: number

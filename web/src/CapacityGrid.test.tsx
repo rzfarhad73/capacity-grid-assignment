@@ -101,4 +101,28 @@ describe('editing weekly hours', () => {
     ).toBe('50 h')
     expect(overCell()).toBeNull()
   })
+
+  it('keeps the typed value and a late save error through a reload', async () => {
+    const reload = deferred<Response>()
+    const patch = deferred<Response>()
+    stubServer(
+      [Promise.resolve(json(capacity(40))), reload.promise],
+      [patch.promise],
+    )
+    const { rerender } = render(<CapacityGrid range={RANGE} />)
+
+    await editWeeklyHours('50')
+    // The rows unmount while the range reloads, and the save fails meanwhile.
+    rerender(<CapacityGrid range={{ ...RANGE }} />)
+    await act(async () => patch.resolve(new Response('', { status: 500 })))
+    await act(async () => reload.resolve(json(capacity(40))))
+
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'may not have been saved',
+    )
+    const input = screen.getByLabelText<HTMLInputElement>(
+      'Weekly hours for Dee Okafor',
+    )
+    expect(input.value).toBe('50')
+  })
 })

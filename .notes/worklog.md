@@ -72,3 +72,10 @@ left unfinished. Append as you go; a line or two per entry is right.
   that started before a save can't bring back the old value.
 - Final check against the seed: all 41,500 person-week cells (500 people × 83 weeks) match an
   independent day-by-day query, and the grid matches the API cell for cell.
+
+## Edit state lifted to the grid
+
+- Open edits now live in `useWeeklyHoursEdits` at grid level instead of the cell, so a typed
+  value, a save in flight and its error survive the row unmounting: during a range reload
+  today, and when rows scroll out under virtualisation later. This resolves the two deferred
+  editing items above.
